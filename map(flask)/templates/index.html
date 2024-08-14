@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>India Map Selection</title>
+    <style>
+        .map-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .india-map {
+            width: 80%;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        .selected-states {
+            text-align: center;
+        }
+
+        .selected-states ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .state {
+            fill: #CCCCCC;
+            stroke: white;
+            stroke-width: 0.5;
+            cursor: pointer;
+        }
+
+        .state.selected {
+            fill: #FFA500;
+        }
+    </style>
+</head>
+<body>
+    <div class="map-container">
+        <img src="{{ url_for('static', filename='india-map.svg') }}" alt="India Map" class="india-map">
+
+
+
+        <div class="selected-states">
+            <h2>Selected States</h2>
+            <ul id="stateList"></ul>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const mapElement = document.getElementById('indiaMap');
+            const stateList = document.getElementById('stateList');
+
+            mapElement.addEventListener('load', () => {
+                const svgDoc = mapElement.contentDocument;
+                if (svgDoc) {
+                    const paths = svgDoc.querySelectorAll('path');
+
+                    paths.forEach((path) => {
+                        path.classList.add('state');
+                        path.addEventListener('click', () => {
+                            const stateName = path.getAttribute('title');
+                            if (stateName) {
+                                path.classList.toggle('selected');
+                                toggleState(stateName);
+                            }
+                        });
+                    });
+                }
+            });
+
+            function toggleState(stateName) {
+                const existingItem = stateList.querySelector(`[data-state="${stateName}"]`);
+                if (existingItem) {
+                    stateList.removeChild(existingItem);
+                } else {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = stateName;
+                    listItem.setAttribute('data-state', stateName);
+                    stateList.appendChild(listItem);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
